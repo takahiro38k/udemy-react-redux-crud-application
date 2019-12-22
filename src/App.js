@@ -1,47 +1,32 @@
-import React from 'react';
-// prop-typesのインポート
-import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 
-// const App = () => {
-//   return (
-//     <div>
-//       <User name={"Taro"} age={10}/>
-//       <User name={"Hanako"} age={5}/>
-//     </div>
-//   )
-// }
+const App = () => (<Counter></Counter>)
 
-// const User = (props) => {
-//   return <div>HI, I am {props.name}, and {props.age} years old!</div>
-// }
+class Counter extends Component {
+  constructor(props) {
+    super(props)
+    console.log(this.state)
+    this.state = { count: 0 }
+  }
 
-const App = () => {
-  const profiles = [
-    { name: "Taro", age: 10},
-    { name: "Hanako", age: 5},
-    { name: "NoName", age: 999}
-  ]
-  return (
-    <div>
-      {
-        // 下記エラーを出さないためにindexを設定。
-        // Warning: Each child in a list should have a unique "key" prop.
-        profiles.map((profiles, index) => {
-          return <User name={profiles.name} age={profiles.age} key={index}/>
-        })
-      }
-    </div>
-  )
-}
+  handlePlusButton = () => {
+    // stateの変更はsetStateを使う。
+    this.setState({ count: this.state.count + 1})
+  }
 
-const User = (props) => {
-  return <div>HI, I am {props.name}, and {props.age} years old!</div>
-}
-
-User.propTypes = {
-  name: PropTypes.string,
-  //.isRequired 入力を必須とする。
-  age: PropTypes.number.isRequired
+  handleMinusButton = () => {
+    this.setState({ count: this.state.count - 1})
+  }
+  
+  render() {
+    return (
+      <React.Fragment>
+        <div>count: { this.state.count }</div>
+        <button onClick={this.handlePlusButton}>+1</button>
+        <button onClick={this.handleMinusButton}>-1</button>
+      </React.Fragment>
+    )
+  }
 }
 
 export default App;
