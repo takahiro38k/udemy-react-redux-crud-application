@@ -1,13 +1,11 @@
-// Actionの実装
+// 外部のAPIサーバにリクエストを投げるhttpクライアン
+import axios from 'axios'
+export const READ_EVENTS = 'READ_EVENTS'
 
-// Reducerでも利用するためexport
-export const INCREMENT = 'INCREMENT'
-export const DECREMENT = 'DECREMENT'
+const ROOT_URL = 'https://udemy-utils.herokuapp.com/api/v1'
+const QUERYSTRING = '?token=token123'
 
-export const increment = () => ({
-  type: INCREMENT
-})
-
-export const decrement = () => ({
-  type: DECREMENT
-})
+export const readEvents = () => async dispatch => {
+  const response = await axios.get(`${ROOT_URL}/events${QUERYSTRING}`)
+  dispatch({ type: READ_EVENTS, response })
+}
