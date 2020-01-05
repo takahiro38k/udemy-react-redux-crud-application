@@ -1,11 +1,46 @@
-// 外部のAPIサーバにリクエストを投げるhttpクライアン
+// axios:
+// HTTP通信を簡単に行うことができるJavascriptライブラリ。
+// 外部のAPIサーバにリクエストを投げるhttpクライアント
+// 返り値はPromise。
 import axios from 'axios'
 export const READ_EVENTS = 'READ_EVENTS'
+export const CREATE_EVENT = 'CREATE_EVENT'
 
+// CRUDの処理内容に関わらず共通して使用するURL
 const ROOT_URL = 'https://udemy-utils.herokuapp.com/api/v1'
 const QUERYSTRING = '?token=token123'
 
+// Action
+// オブジェクト。type(keyの役割)と値のセット。値はなくても可。
+// typeはconst(定数)で大文字とすることが多い。
+// Store内のStateを更新するためにはActionを発行する必要がある。
+// --------------------
+// Action Creator
+// Actionを返す関数のこと。下記 readEvents(), postEvent()。
+// --------------------
+// thunk
+// 導入(src/index.js)したことで、Action creator(readEvents)が
+// オブジェクト(Action)ではなく関数(async dispatch)を返すことができる。
+// つまり
+// const actionCreator = () => {}    こうだったのが
+// const actionCreator = () => () => {}    こう書けるようになる。
+// --------------------
+// dispatch
+// Reducer にアクションを通知する関数。
+// 単語としてのの意味は、派遣する、送る、など。
+// --------------------
+// イベントの一覧を表示するためのAction Creater
 export const readEvents = () => async dispatch => {
-  const response = await axios.get(`${ROOT_URL}/events${QUERYSTRING}`)
-  dispatch({ type: READ_EVENTS, response })
+  const response = await axios.get(`${ROOT_URL}/events${QUERYSTRING}`);
+  // console.log(response); // 取得データを確認。
+  // dispatch(Action)を実行することでReducerが実行される。
+  dispatch({ type: READ_EVENTS, response });
 }
+
+// 新規イベントを登録するためのAction Creater
+export const postEvent = values => async dispatch => {
+  const response = await axios.post(`${ROOT_URL}/events${QUERYSTRING}`, values);
+  dispatch({ type: CREATE_EVENT, response });
+}
+
+
