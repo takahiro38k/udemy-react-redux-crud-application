@@ -4,6 +4,8 @@
 export const INCREMENT = 'INCREMENT'
 export const DECREMENT = 'DECREMENT'
 
+// 下記のincrement, decrementのように、
+// Actionを返す関数のことをAction Creatorという。
 export const increment = () => ({
   type: INCREMENT
 })
@@ -11,3 +13,4 @@ export const increment = () => ({
 export const decrement = () => ({
   type: DECREMENT
 })
+　
