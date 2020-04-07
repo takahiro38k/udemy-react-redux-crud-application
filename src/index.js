@@ -10,17 +10,26 @@ import { Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 // リンクの実装に必要なコンポーネントをまとめてimport
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
+// デバッグをしやすくするためのツール
+import { composeWithDevTools } from 'redux-devtools-extension'
 
 import './index.css';
 import reducer from './reducers';
 import EventsIndex from './components/events_index';
 import EventsNew from './components/events_new';
+import EventsShow from './components/events_show';
 import registerServiceWorker from './registerServiceWorker';
 
 // アプリケーション内のすべてのstateをstoreで管理する。
 // createStoreの第2引数にapplyMiddleware()を入れて、その引数にthunkを入れることで、
 // storeの中にthunkを組み込む。
-const store = createStore(reducer, applyMiddleware(thunk))
+// --------------------
+// enhancerはcreateStore()の2nd paraを表す。
+// --------------------
+// 開発環境の時だけ、composeWithDevTools()でデバッグを行う。
+const enhancer = process.env.NODE_ENV === 'development' ?
+  composeWithDevTools(applyMiddleware(thunk)) : applyMiddleware(thunk)
+const store = createStore(reducer, enhancer)
 
 ReactDOM.render(
   // Reactのみの実装だと、propsのバケツリレー(親 => 子 => 孫 => ...)が必要だった。
@@ -36,9 +45,21 @@ ReactDOM.render(
     さらにBrowserRouterコンポーネントでラップして使用する。
      */}
     <BrowserRouter>
+      {/* Switchでwrapされた各々のコンポーネントに
+        設定されたpathが上から順に評価されて、
+        最初にマッチしたコンポーネントのみが
+        renderingの対象となる。
+        そして、一般的なswitch文の様に、
+        上から順に排他的にマッチするものを探します。 */}
       <Switch>
-        <Route exact path="/events/new" component={EventsNew} />
+        {/* exactを付けないと、部分一致でも指定のコンポーネントにアクセスできる。
+          今回は、動作保証までを目指しているので、上記2つのコンポーネントはexactを外した模様。 */}
+        <Route path="/events/new" component={EventsNew} />
+        {/* 変数には:を頭につける。今回の場合、idは様々な値が入る。 */}
+        <Route path="/events/:id" component={EventsShow} />
+        {/* exact は完全な一致のみを適用 */}
         <Route exact path="/" component={EventsIndex} />
+        <Route exact path="/events" component={EventsIndex} />
       </Switch>
     </BrowserRouter>
   </Provider>,

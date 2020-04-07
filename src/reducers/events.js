@@ -1,12 +1,17 @@
 // 取得したデータを配列からオブジェクトに変換して操作しやすいようにするパッケージ。
 import _ from 'lodash'
-import { READ_EVENTS } from '../actions'
+// actionオブジェクトのtypeを../actions/index.jsからimport
+import {
+  READ_EVENTS,
+  DELETE_EVENT,
+} from '../actions'
 
 // Reducer
-// 1)以前のstate
+// 1)現状のstate　※今回の場合でいうと、引数event。
 // 2)action
 // 上記2つを組み合わせて，新しい状態を生み出すための関数。
-export default (event = {}, action) => {
+// よって、どのactionも return で必ず新しい状態を返すようにする。
+export default (events = {}, action) => {
   // actionのtypeに応じて分岐。
   switch (action.type) {
     case READ_EVENTS:
@@ -28,8 +33,16 @@ export default (event = {}, action) => {
       // 第2引数に指定したプロパティをkeyとして、オブジェクトに変換する。
       // console.log(_.mapKeys(action.response.data, 'id')); // lodashの確認。
       return _.mapKeys(action.response.data, 'id');
+    case DELETE_EVENT:
+      delete events[action.id]
+      // reduxの原則に則り、stateを変更した場合は
+      // Object.assign() または object spread syntax(...)
+      // によってstateをreturnする。
+      // 今回は短く書ける object spread syntax(...) を採用。
+      // https://redux.js.org/recipes/using-object-spread-operator
+      return { ...events }
     default:
-      return event;
+      return events;
   }
 }
 
