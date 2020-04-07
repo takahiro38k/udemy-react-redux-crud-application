@@ -21,7 +21,12 @@ class EventsIndex extends Component {
     return _.map(this.props.events, event => (
       <tr key={event.id}>
         <td>{event.id}</td>
-        <td>{event.title}</td>
+        <td>
+          {/* 選んだtitleに応じてリンクを動的に決める。 */}
+          <Link to={`/events/${event.id}`}>
+            {event.title}
+          </Link>
+        </td>
         <td>{event.body}</td>
       </tr>
     ))
@@ -73,6 +78,7 @@ const mapStateToProps = state => ({ events: state.events})
 // 以下、上記Dispatchのショートハンド。
 const mapDispatchToProps = ({ readEvents })
 
+// connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
 // コンポーネントに結びつける。
 // connect(mapStateToProps, mapDispatchToProps)(コンポーネント名)

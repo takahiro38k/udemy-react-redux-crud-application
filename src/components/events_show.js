@@ -8,12 +8,21 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form'
 import { Link } from 'react-router-dom'
 
-import { postEvent } from '../actions'
+import { getEvent, deleteEvent, putEvent } from '../actions'
 
-class EventsNew extends Component {
+class EventsShow extends Component {
   constructor(props) {
+    // console.log("EventsShow") // レンダリング確認
     super(props)
     this.onSubmit = this.onSubmit.bind(this)
+    this.onDelete = this.onDelete.bind(this)
+  }
+
+  // 直接URLに/event/<id>を入力した場合でも、
+  // フォームに既存の値を表示するよう設定。
+  componentDidMount() {
+    const { id } = this.props.match.params
+    if (id) this.props.getEvent(id)
   }
 
   // field引数は、下記のrender()にあるFieldコンポーネントに入力される値。
@@ -42,9 +51,19 @@ class EventsNew extends Component {
     )
   }
 
+  async onDelete() {
+    // matchはreact routerの機能によって作成されるオブジェクト
+    // console.log(this.props.match.params) // 出か確認
+    const { id } = this.props.match.params
+    await this.props.deleteEvent(id)
+    this.props.history.push('/')
+  }
+
   async onSubmit(values) {
-    await this.props.postEvent(values)
-    // トップページの履歴をプッシュ
+    await this.props.putEvent(values)
+    // this.props.history.push()
+    // react-router-domによる画面遷移。前居た画面を履歴に追加し、
+    // ブラウザの戻るボタンで戻れるようにする(React Router で標準的な挙動)。
     this.props.history.push('/')
   }
 
@@ -71,6 +90,7 @@ class EventsNew extends Component {
           <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           {/* Cancelポタン */}
           <Link to="/" >Cancel</Link>
+          <Link to="/" onClick={this.onDelete} >Delete</Link>
         </div>
       </form>
     )
@@ -88,8 +108,14 @@ const validate = values => {
   return errors
 }
 
-// この画面ではイベントのstateを描画することはないので、
-// mapStateToProps は不要。
+// mapStateToProps
+// Storeからコンポーネントに必要なstateを取り出し、
+// コンポーネント内にpropsとしてマッピングするための関数。
+// 引数のstateは、状態のトップレベルを指すことに注意。
+const mapStateToProps = (state, ownProps) => {
+  const event = state.events[ownProps.match.params.id]
+  return { initialValues: event, event }
+}
 
 // mapDispatchToProps
 // dispatch()関数を引数に取り、状態遷移を行う関数(どのように
@@ -101,7 +127,7 @@ const validate = values => {
 // })
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 上記Dispatchのショートハンドが下記。
-const mapDispatchToProps = ({ postEvent })
+const mapDispatchToProps = ({ deleteEvent, getEvent, putEvent })
 
 // connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
@@ -123,15 +149,20 @@ const fnc1 = x => {
 fnc1('a')('b') //  => 'ab'
  */
 // --------------------
-export default connect(null, mapDispatchToProps)(
+export default connect(mapStateToProps, mapDispatchToProps)(
   // Fieldコンポーネントは、reduxForm()関数でdecorateされたコンポーネントの
   // 内部に存在しないといけない。
   // --------------------
   // 今回の場合、EventsNewコンポーネントをreduxForm()でdecorateする。
   // 具体的には、reduxForm()が返す関数の引数にEventsNewを設定する。
-  // よって reduxForm()(EventsNew) となる。
+  // よって reduxForm()(EventsShow) となる。
   // --------------------
   // reduxForm()の引数には、validationのルールや、
   // フォームのユニークな名前を、オブジェクトで指定する。
-  reduxForm({ validate, form: 'eventNewForm' })(EventsNew)
-)
+  // --------------------
+  // enableReinitialize:
+  // デフォルトはfalse。trueを設定するとinitialValuesプロパティ
+  // (mapStateToPropsの返り値)が変更されるたびに
+  // フォームが再初期化される。
+  // 今回の場合、フォームに既存の値を表示するために必要。
+  reduxForm({ validate, form: 'eventShowForm', enableReinitialize: true })(EventsShow) )
