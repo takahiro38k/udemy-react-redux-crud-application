@@ -12,6 +12,8 @@ import thunk from 'redux-thunk';
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 // デバッグをしやすくするためのツール
 import { composeWithDevTools } from 'redux-devtools-extension'
+// コンポーネントでUIを変更するためのツール　
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
 import './index.css';
 import reducer from './reducers';
@@ -32,37 +34,40 @@ const enhancer = process.env.NODE_ENV === 'development' ?
 const store = createStore(reducer, enhancer)
 
 ReactDOM.render(
-  // Reactのみの実装だと、propsのバケツリレー(親 => 子 => 孫 => ...)が必要だった。
-  // それを解消するのがReduxのstore。
-  // 下記のようにProviderコンポーネントにstore属性を渡すことで、
-  // すべてのcomponetがstoreにアクセスできる。
-  <Provider store={store}>
-    {/*
-    Linkコンポーネント(./components/配下で使用)は、
-    Routeコンポーネントでラップしないと下記エラーとなる。
-    Error: Invariant failed: You should not use <Link> outside a <Router>
-    そのRouteコンポーネントをSwitchコンポーネントでラップし、
-    さらにBrowserRouterコンポーネントでラップして使用する。
-     */}
-    <BrowserRouter>
-      {/* Switchでwrapされた各々のコンポーネントに
-        設定されたpathが上から順に評価されて、
-        最初にマッチしたコンポーネントのみが
-        renderingの対象となる。
-        そして、一般的なswitch文の様に、
-        上から順に排他的にマッチするものを探します。 */}
-      <Switch>
-        {/* exactを付けないと、部分一致でも指定のコンポーネントにアクセスできる。
-          今回は、動作保証までを目指しているので、上記2つのコンポーネントはexactを外した模様。 */}
-        <Route path="/events/new" component={EventsNew} />
-        {/* 変数には:を頭につける。今回の場合、idは様々な値が入る。 */}
-        <Route path="/events/:id" component={EventsShow} />
-        {/* exact は完全な一致のみを適用 */}
-        <Route exact path="/" component={EventsIndex} />
-        <Route exact path="/events" component={EventsIndex} />
-      </Switch>
-    </BrowserRouter>
-  </Provider>,
+  // Material-uiを適用するために下記コンポーネントでwrapする。
+  <MuiThemeProvider>
+    {/* Reactのみの実装だと、propsのバケツリレー(親 => 子 => 孫 => ...)が必要だった。
+      それを解消するのがReduxのstore。
+      下記のようにProviderコンポーネントにstore属性を渡すことで、
+      すべてのcomponetがstoreにアクセスできる。 */}
+    <Provider store={store}>
+      {/*
+      Linkコンポーネント(./components/配下で使用)は、
+      Routeコンポーネントでラップしないと下記エラーとなる。
+      Error: Invariant failed: You should not use <Link> outside a <Router>
+      そのRouteコンポーネントをSwitchコンポーネントでラップし、
+      さらにBrowserRouterコンポーネントでラップして使用する。
+      */}
+      <BrowserRouter>
+        {/* Switchでwrapされた各々のコンポーネントに
+          設定されたpathが上から順に評価されて、
+          最初にマッチしたコンポーネントのみが
+          renderingの対象となる。
+          そして、一般的なswitch文の様に、
+          上から順に排他的にマッチするものを探します。 */}
+        <Switch>
+          {/* exactを付けないと、部分一致でも指定のコンポーネントにアクセスできる。
+            今回は、動作保証までを目指しているので、上記2つのコンポーネントはexactを外した模様。 */}
+          <Route path="/events/new" component={EventsNew} />
+          {/* 変数には:を頭につける。今回の場合、idは様々な値が入る。 */}
+          <Route path="/events/:id" component={EventsShow} />
+          {/* exact は完全な一致のみを適用 */}
+          <Route exact path="/" component={EventsIndex} />
+          <Route exact path="/events" component={EventsIndex} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>
+  </MuiThemeProvider>,
   document.getElementById('root')
 );
 

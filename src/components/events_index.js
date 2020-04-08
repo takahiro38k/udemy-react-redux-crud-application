@@ -7,6 +7,18 @@ import { connect } from 'react-redux';
 import _ from 'lodash'
 // リンクを実装するコンポーネント
 import { Link } from 'react-router-dom'
+import {
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderColumn,
+  TableRow,
+  TableRowColumn,
+} from 'material-ui/Table'
+// 新規作成ボタン用
+import FloatingActionButton from 'material-ui/FloatingActionButton'
+import ContentAdd from 'material-ui/svg-icons/content/add'
+
 // フォルダ名指定のimportは、自動的にindex.jsを参照する。
 import { readEvents } from '../actions'
 
@@ -19,38 +31,76 @@ class EventsIndex extends Component {
 
   renderEvents() {
     return _.map(this.props.events, event => (
-      <tr key={event.id}>
-        <td>{event.id}</td>
+      // <tr key={event.id}>
+      <TableRow key={event.id}>
+        {/* <td>{event.id}</td>
         <td>
-          {/* 選んだtitleに応じてリンクを動的に決める。 */}
           <Link to={`/events/${event.id}`}>
             {event.title}
           </Link>
         </td>
-        <td>{event.body}</td>
-      </tr>
+        <td>{event.body}</td> */}
+        <TableRowColumn>{event.id}</TableRowColumn>
+        <TableRowColumn>
+          {/* 選んだtitleに応じてリンクを動的に決める。 */}
+          <Link to={`/events/${event.id}`}>
+            {event.title}
+          </Link>
+        </TableRowColumn>
+        <TableRowColumn>{event.body}</TableRowColumn>
+      {/* </tr> */}
+      </TableRow>
     ))
   }
 
   render() {
-
+    const style = {
+      position: "fixed",
+      right: 12,
+      bottom: 12,
+    }
     return (
       <React.Fragment>
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
+        {/* 新規イベント作成ボタン */}
+        {/* 上記styleの適用によって、ボタンを画面左下に表示 */}
+        <FloatingActionButton style={style} containerElement={<Link to="/events/new" />}>
+          {/* ボタンに+を表示 */}
+          <ContentAdd />
+        </FloatingActionButton>
+
+        {/* <table> */}
+        <Table>
+          {/* <thead> */}
+          {/* displaySelectAll   falseで全選択のチェックボックスを非表示
+              adjustForCheckbox   falseで全選択のチェックボックス部分を詰めて表示*/}
+          <TableHeader
+            displaySelectAll={false}
+            adjustForCheckbox={false}>
+            {/* <tr> */}
+            <TableRow>
+              {/* <th>ID</th>
               <th>Title</th>
-              <th>Body</th>
-            </tr>
-          </thead>
+              <th>Body</th> */}
+              <TableHeaderColumn>ID</TableHeaderColumn>
+              <TableHeaderColumn>Title</TableHeaderColumn>
+              <TableHeaderColumn>Body</TableHeaderColumn>
+            {/* </tr> */}
+            </TableRow>
+          {/* </thead> */}
+          </TableHeader>
 
-          <tbody>
+          {/* <tbody> */}
+          {/* displayRowCheckbox   falseでチェックボックスを非表示 */}
+          <TableBody displayRowCheckbox={false}>
             {this.renderEvents()}
-          </tbody>
-        </table>
+          {/* </tbody> */}
+          </TableBody>
+        {/* </table> */}
+        </Table>
 
-        <Link to="/events/new">New Event</Link>
+        {/* Material-ui導入のため、return直後の
+          FloatingActionButtonのほうで実装。 */}
+        {/* <Link to="/events/new">New Event</Link> */}
       </React.Fragment>
 
     )
