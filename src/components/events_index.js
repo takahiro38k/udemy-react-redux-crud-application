@@ -78,6 +78,7 @@ const mapStateToProps = state => ({ events: state.events})
 // 以下、上記Dispatchのショートハンド。
 const mapDispatchToProps = ({ readEvents })
 
+// connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
 // コンポーネントに結びつける。
 // connect(mapStateToProps, mapDispatchToProps)(コンポーネント名)

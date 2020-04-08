@@ -2,7 +2,10 @@
 import _ from 'lodash'
 // actionオブジェクトのtypeを../actions/index.jsからimport
 import {
+  CREATE_EVENT,
   READ_EVENTS,
+  READ_EVENT,
+  UPDATE_EVENT,
   DELETE_EVENT,
 } from '../actions'
 
@@ -33,6 +36,14 @@ export default (events = {}, action) => {
       // 第2引数に指定したプロパティをkeyとして、オブジェクトに変換する。
       // console.log(_.mapKeys(action.response.data, 'id')); // lodashの確認。
       return _.mapKeys(action.response.data, 'id');
+    case CREATE_EVENT:
+    case READ_EVENT:
+    case UPDATE_EVENT:
+      // console.log(action) // 渡ってくるactionの確認
+      // response.date {id: 5, title: "Let's have an event 5!", body: "This is the body for event 5."}
+      const data = action.response.data
+      // スプレッド構文については下記 case DELETE_EVENT を参照。
+      return { ...events, [data.id]: data }
     case DELETE_EVENT:
       delete events[action.id]
       // reduxの原則に則り、stateを変更した場合は

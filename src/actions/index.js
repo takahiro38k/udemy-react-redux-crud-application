@@ -4,7 +4,9 @@
 // 返り値はPromise。
 import axios from 'axios'
 export const READ_EVENTS = 'READ_EVENTS'
+export const READ_EVENT = 'READ_EVENT'
 export const CREATE_EVENT = 'CREATE_EVENT'
+export const UPDATE_EVENT = 'UPDATE_EVENT'
 export const DELETE_EVENT = 'DELETE_EVENT'
 
 // CRUDの処理内容に関わらず共通して使用するURL
@@ -42,6 +44,20 @@ export const readEvents = () => async dispatch => {
 export const postEvent = values => async dispatch => {
   const response = await axios.post(`${ROOT_URL}/events${QUERYSTRING}`, values);
   dispatch({ type: CREATE_EVENT, response });
+}
+
+// 既存イベントを更新する。
+export const putEvent = values => async dispatch => {
+  const response = await axios.put(`${ROOT_URL}/events/${values.id}${QUERYSTRING}`, values)
+  // console.log(response) //HTTPレスポンスの確認
+  dispatch({ type: UPDATE_EVENT, response })
+}
+
+// 既存イベントの編集画面を直接URLから開いた時、既存の値をフォームに表示する。
+export const getEvent = id => async dispatch => {
+  const response = await axios.get(`${ROOT_URL}/events/${id}${QUERYSTRING}`)
+  // console.log(response) //HTTPレスポンスの確認
+  dispatch({ type: READ_EVENT, response })
 }
 
 // イベントを削除するためのAction Creater

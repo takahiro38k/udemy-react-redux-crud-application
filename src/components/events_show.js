@@ -18,6 +18,13 @@ class EventsShow extends Component {
     this.onDelete = this.onDelete.bind(this)
   }
 
+  // 直接URLに/event/<id>を入力した場合でも、
+  // フォームに既存の値を表示するよう設定。
+  componentDidMount() {
+    const { id } = this.props.match.params
+    if (id) this.props.getEvent(id)
+  }
+
   // field引数は、下記のrender()にあるFieldコンポーネントに入力される値。
   // fieldから様々な情報を取得できる。
   renderField(field) {
@@ -53,20 +60,23 @@ class EventsShow extends Component {
   }
 
   async onSubmit(values) {
-    // await this.props.postEvent(values)
-    // トップページの履歴をプッシュ
+    await this.props.putEvent(values)
+    // this.props.history.push()
+    // react-router-domによる画面遷移。前居た画面を履歴に追加し、
+    // ブラウザの戻るボタンで戻れるようにする(React Router で標準的な挙動)。
     this.props.history.push('/')
   }
 
   render() {
     // あらかじめ提供されているパラメータ。
     // ++++----------------
-    // pristine  何も入力されていない状態だとtrue。
-    // subumitting  Submitボタンを1度押すとtrue。ボタンの連打抑止に使える。
+    // pristine      何も入力されていない状態だとtrue。
+    // subumitting   Submitボタンを1度押すとtrue。ボタンの連打抑止に使える。
+    // invalid       validationエラーが表示されたらtrue。
+    //
+    // or条件(||)でSubmitボタンのdisabled属性に設定し、ボタンを非活性にする。
     // ----------------++++
-    // Submitボタンのdisabled属性に設定することで、
-    // 未入力状態 or 1度ボタンを押した状態 でボタンが非活性となる。
-    const { handleSubmit, pristine, submitting } = this.props
+    const { handleSubmit, pristine, submitting, invalid } = this.props
 
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
@@ -77,7 +87,7 @@ class EventsShow extends Component {
 
         <div>
           {/* Submitポタン */}
-          <input type="submit" value="Submit" disabled={pristine || submitting} />
+          <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           {/* Cancelポタン */}
           <Link to="/" >Cancel</Link>
           <Link to="/" onClick={this.onDelete} >Delete</Link>
@@ -98,8 +108,14 @@ const validate = values => {
   return errors
 }
 
-// この画面ではイベントのstateを描画することはないので、
-// mapStateToProps は不要。
+// mapStateToProps
+// Storeからコンポーネントに必要なstateを取り出し、
+// コンポーネント内にpropsとしてマッピングするための関数。
+// 引数のstateは、状態のトップレベルを指すことに注意。
+const mapStateToProps = (state, ownProps) => {
+  const event = state.events[ownProps.match.params.id]
+  return { initialValues: event, event }
+}
 
 // mapDispatchToProps
 // dispatch()関数を引数に取り、状態遷移を行う関数(どのように
@@ -111,8 +127,9 @@ const validate = values => {
 // })
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 上記Dispatchのショートハンドが下記。
-const mapDispatchToProps = ({ deleteEvent })
+const mapDispatchToProps = ({ deleteEvent, getEvent, putEvent })
 
+// connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
 // コンポーネントに結びつける。
 // connect(mapStateToProps, mapDispatchToProps)(コンポーネント名)
@@ -132,7 +149,7 @@ const fnc1 = x => {
 fnc1('a')('b') //  => 'ab'
  */
 // --------------------
-export default connect(null, mapDispatchToProps)(
+export default connect(mapStateToProps, mapDispatchToProps)(
   // Fieldコンポーネントは、reduxForm()関数でdecorateされたコンポーネントの
   // 内部に存在しないといけない。
   // --------------------
@@ -142,4 +159,10 @@ export default connect(null, mapDispatchToProps)(
   // --------------------
   // reduxForm()の引数には、validationのルールや、
   // フォームのユニークな名前を、オブジェクトで指定する。
-  reduxForm({ validate, form: 'eventShowForm' })(EventsShow) )
+  // --------------------
+  // enableReinitialize:
+  // デフォルトはfalse。trueを設定するとinitialValuesプロパティ
+  // (mapStateToPropsの返り値)が変更されるたびに
+  // フォームが再初期化される。
+  // 今回の場合、フォームに既存の値を表示するために必要。
+  reduxForm({ validate, form: 'eventShowForm', enableReinitialize: true })(EventsShow) )

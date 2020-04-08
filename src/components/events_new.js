@@ -51,12 +51,13 @@ class EventsNew extends Component {
   render() {
     // あらかじめ提供されているパラメータ。
     // ++++----------------
-    // pristine  何も入力されていない状態だとtrue。
-    // subumitting  Submitボタンを1度押すとtrue。ボタンの連打抑止に使える。
+    // pristine      何も入力されていない状態だとtrue。
+    // subumitting   Submitボタンを1度押すとtrue。ボタンの連打抑止に使える。
+    // invalid       validationエラーが表示されたらtrue。
+    //
+    // or条件(||)でSubmitボタンのdisabled属性に設定し、ボタンを非活性にする。
     // ----------------++++
-    // Submitボタンのdisabled属性に設定することで、
-    // 未入力状態 or 1度ボタンを押した状態 でボタンが非活性となる。
-    const { handleSubmit, pristine, submitting } = this.props
+    const { handleSubmit, pristine, submitting, invalid } = this.props
 
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
@@ -67,7 +68,7 @@ class EventsNew extends Component {
 
         <div>
           {/* Submitポタン */}
-          <input type="submit" value="Submit" disabled={pristine || submitting} />
+          <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
           {/* Cancelポタン */}
           <Link to="/" >Cancel</Link>
         </div>
@@ -102,6 +103,7 @@ const validate = values => {
 // 上記Dispatchのショートハンドが下記。
 const mapDispatchToProps = ({ postEvent })
 
+// connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
 // コンポーネントに結びつける。
 // connect(mapStateToProps, mapDispatchToProps)(コンポーネント名)
