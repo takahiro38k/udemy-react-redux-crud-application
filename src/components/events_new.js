@@ -7,6 +7,8 @@ import { connect } from 'react-redux';
 // https://redux-form.com/8.3.0/docs/gettingstarted.md/
 import { Field, reduxForm } from 'redux-form'
 import { Link } from 'react-router-dom'
+import RaisedButton from 'material-ui/RaisedButton'
+import TextField from 'material-ui/TextField'
 
 import { postEvent } from '../actions'
 
@@ -33,12 +35,22 @@ class EventsNew extends Component {
 
     // 入力フォーム
     return (
+      /*
       <div>
         <input {...input} placeholder={label} type={type} />
-        {/* validationのメッセージを表示 */}
-        {/* タッチした状態、かつエラーがある場合、エラー内容を表示 */}
+        // validationのメッセージを表示
+        // タッチした状態、かつエラーがある場合、エラー内容を表示
         {touched && error && <span>{error}</span>}
       </div>
+       */
+      <TextField
+        hintText={label}
+        floatingLabelText={label}
+        type={type}
+        errorText={touched && error}
+        {...input}
+        fullWidth={true}
+      />
     )
   }
 
@@ -58,6 +70,7 @@ class EventsNew extends Component {
     // or条件(||)でSubmitボタンのdisabled属性に設定し、ボタンを非活性にする。
     // ----------------++++
     const { handleSubmit, pristine, submitting, invalid } = this.props
+    const style = { margin: 18 }
 
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
@@ -66,18 +79,20 @@ class EventsNew extends Component {
         {/* Bodyの入力フォーム */}
         <div><Field label="Body" name="body" type="text" component={this.renderField} /></div>
 
-        <div>
-          {/* Submitポタン */}
+        {/* <div>
+          // Submitポタン
           <input type="submit" value="Submit" disabled={pristine || submitting || invalid} />
-          {/* Cancelポタン */}
+          // Cancelポタン
           <Link to="/" >Cancel</Link>
-        </div>
+        </div> */}
+        <RaisedButton label="Submit" type="submit" style={style} disabled={pristine || submitting || invalid}/>
+        <RaisedButton label="Cancel" style={style} containerElement={<Link to="/" />}/>
       </form>
     )
   }
 }
 
-// validationの定義(エラーの管理)
+// validationの定義(エラーの管理) 
 // values引数には入力値が渡ってくる。
 const validate = values => {
   const errors = {}
