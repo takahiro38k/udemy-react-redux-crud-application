@@ -175,10 +175,18 @@ export default connect(mapStateToProps, mapDispatchToProps)(
   // --------------------
   // reduxForm()の引数には、validationのルールや、
   // フォームのユニークな名前を、オブジェクトで指定する。
-  // --------------------
-  // enableReinitialize:
-  // デフォルトはfalse。trueを設定するとinitialValuesプロパティ
-  // (mapStateToPropsの返り値)が変更されるたびに
-  // フォームが再初期化される。
-  // 今回の場合、フォームに既存の値を表示するために必要。
-  reduxForm({ validate, form: 'eventShowForm', enableReinitialize: true })(EventsShow) )
+  reduxForm({
+    validate,
+    form: 'eventShowForm',
+    // enableReinitialize:
+    // デフォルトはfalse。trueを設定するとinitialValuesプロパティ
+    // (mapStateToPropsの返り値)が変更されるたびに
+    // フォームが再初期化される。
+    // --------------------
+    // trueにしないと、例えば、一覧ページを開いている間に
+    // 別のユーザーがイベントを変更し、その後に詳細ページに移動すると、
+    // 変更前の値が表示されてしまう。
+    // ※コースの46で説明あり。
+    enableReinitialize: true
+  })(EventsShow))
+
