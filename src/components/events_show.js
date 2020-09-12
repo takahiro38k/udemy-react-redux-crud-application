@@ -43,7 +43,7 @@ class EventsShow extends Component {
     const { input, label, type, meta: {touched, error } }  = field
 
     // 入力フォーム
-    return (
+      return (
       /*
       <div>
         <input {...input} placeholder={label} type={type} />

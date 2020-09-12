@@ -1,21 +1,21 @@
 // 新規イベントの入力画面
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 // FieldコンポーネントとreduxFormをimportし、Redux-Formを実装する。
 // Redux-Formの導入手順は下記。
 // https://redux-form.com/8.3.0/docs/gettingstarted.md/
-import { Field, reduxForm } from 'redux-form'
-import { Link } from 'react-router-dom'
-import RaisedButton from 'material-ui/RaisedButton'
-import TextField from 'material-ui/TextField'
+import { Field, reduxForm } from "redux-form";
+import { Link } from "react-router-dom";
+import RaisedButton from "material-ui/RaisedButton";
+import TextField from "material-ui/TextField";
 
-import { postEvent } from '../actions'
+import { postEvent } from "../actions";
 
 class EventsNew extends Component {
   constructor(props) {
-    super(props)
-    this.onSubmit = this.onSubmit.bind(this)
+    super(props);
+    this.onSubmit = this.onSubmit.bind(this);
   }
 
   // field引数は、下記のrender()にあるFieldコンポーネントに入力される値。
@@ -31,7 +31,12 @@ class EventsNew extends Component {
     // --------------------
     // 詳細は下記のFieldコンポーネントのマニュアルに記載
     // https://redux-form.com/8.3.0/docs/api/field.md/
-    const { input, label, type, meta: {touched, error } }  = field
+    const {
+      input,
+      label,
+      type,
+      meta: { touched, error },
+    } = field;
 
     // 入力フォーム
     return (
@@ -51,13 +56,13 @@ class EventsNew extends Component {
         {...input}
         fullWidth={true}
       />
-    )
+    );
   }
 
   async onSubmit(values) {
-    await this.props.postEvent(values)
+    await this.props.postEvent(values);
     // トップページの履歴をプッシュ
-    this.props.history.push('/')
+    this.props.history.push("/");
   }
 
   render() {
@@ -69,15 +74,29 @@ class EventsNew extends Component {
     //
     // or条件(||)でSubmitボタンのdisabled属性に設定し、ボタンを非活性にする。
     // ----------------++++
-    const { handleSubmit, pristine, submitting, invalid } = this.props
-    const style = { margin: 18 }
+    const { handleSubmit, pristine, submitting, invalid } = this.props;
+    const style = { margin: 18 };
 
     return (
       <form onSubmit={handleSubmit(this.onSubmit)}>
         {/* Titleの入力フォーム */}
-        <div><Field label="Title" name="title" type="text" component={this.renderField} /></div>
+        <div>
+          <Field
+            label="Title"
+            name="title"
+            type="text"
+            component={this.renderField}
+          />
+        </div>
         {/* Bodyの入力フォーム */}
-        <div><Field label="Body" name="body" type="text" component={this.renderField} /></div>
+        <div>
+          <Field
+            label="Body"
+            name="body"
+            type="text"
+            component={this.renderField}
+          />
+        </div>
 
         {/* <div>
           // Submitポタン
@@ -85,23 +104,32 @@ class EventsNew extends Component {
           // Cancelポタン
           <Link to="/" >Cancel</Link>
         </div> */}
-        <RaisedButton label="Submit" type="submit" style={style} disabled={pristine || submitting || invalid}/>
-        <RaisedButton label="Cancel" style={style} containerElement={<Link to="/" />}/>
+        <RaisedButton
+          label="Submit"
+          type="submit"
+          style={style}
+          disabled={pristine || submitting || invalid}
+        />
+        <RaisedButton
+          label="Cancel"
+          style={style}
+          containerElement={<Link to="/" />}
+        />
       </form>
-    )
+    );
   }
 }
 
-// validationの定義(エラーの管理) 
+// validationの定義(エラーの管理)
 // values引数には入力値が渡ってくる。
-const validate = values => {
-  const errors = {}
+const validate = (values) => {
+  const errors = {};
 
-  if (!values.title) errors.title = "Enter a title, please."
-  if (!values.body) errors.body = "Enter a body, please."
+  if (!values.title) errors.title = "Enter a title, please.";
+  if (!values.body) errors.body = "Enter a body, please.";
 
-  return errors
-}
+  return errors;
+};
 
 // この画面ではイベントのstateを描画することはないので、
 // mapStateToProps は不要。
@@ -116,7 +144,7 @@ const validate = values => {
 // })
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // 上記Dispatchのショートハンドが下記。
-const mapDispatchToProps = ({ postEvent })
+const mapDispatchToProps = { postEvent };
 
 // connect()()
 // stateとdispatch(actionの送信)が混ぜ込まれたpropsを、
@@ -138,7 +166,10 @@ const fnc1 = x => {
 fnc1('a')('b') //  => 'ab'
  */
 // --------------------
-export default connect(null, mapDispatchToProps)(
+export default connect(
+  null,
+  mapDispatchToProps
+)(
   // Fieldコンポーネントは、reduxForm()関数でdecorateされたコンポーネントの
   // 内部に存在しないといけない。
   // --------------------
@@ -148,5 +179,5 @@ export default connect(null, mapDispatchToProps)(
   // --------------------
   // reduxForm()の引数には、validationのルールや、
   // フォームのユニークな名前を、オブジェクトで指定する。
-  reduxForm({ validate, form: 'eventNewForm' })(EventsNew)
-)
+  reduxForm({ validate, form: "eventNewForm" })(EventsNew)
+);
